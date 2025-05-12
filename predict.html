@@ -1,54 +1,73 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Color Prediction</title>
-  <script>
-    let history = [];
-    function startPrediction() {
-      const predictionDiv = document.getElementById("prediction");
-      const historyDiv = document.getElementById("history");
-      const timerDiv = document.getElementById("timer");
-
-      setInterval(() => {
-        let color = ["🟥 RED", "🟩 GREEN", "🟦 BLUE"][Math.floor(Math.random() * 3)];
-        predictionDiv.textContent = "Prediction: " + color;
-        history.unshift(color);
-        history = history.slice(0, 10);
-        historyDiv.innerHTML = history.map(c => "<div>" + c + "</div>").join("");
-        let timeLeft = 60;
-        const t = setInterval(() => {
-          timeLeft--;
-          timerDiv.textContent = "Next Prediction In: " + timeLeft + "s";
-          if (timeLeft <= 0) clearInterval(t);
-        }, 1000);
-      }, 60000);
-
-      predictionDiv.textContent = "Prediction: Waiting...";
-    }
-
-    window.onload = function() {
-      if (sessionStorage.getItem('loggedIn') !== 'true') {
-        alert("Please login first.");
-        window.location.href = 'index.html';
-        return;
-      }
-      startPrediction();
-    };
-  </script>
+  <title>TEAM GOD Under 2-Level Prediction</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white p-6">
-  <div class="max-w-3xl mx-auto">
-    <h1 class="text-3xl font-bold text-center mb-4">🔮 Color Trading Prediction</h1>
-    <div id="timer" class="text-center mb-6 text-lg">Next Prediction In: 60s</div>
-    <div id="prediction" class="text-center text-2xl font-bold mb-6">Prediction: </div>
-    <div class="bg-gray-800 p-4 rounded">
-      <h2 class="text-xl font-semibold mb-2">History</h2>
-      <div id="history" class="space-y-1"></div>
+<body class="bg-gray-900 text-white font-sans">
+  <div class="max-w-xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold text-center text-yellow-400 mb-6">91Club Prediction</h1>
+
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Next Prediction</h2>
+        <div id="timer" class="text-lg bg-yellow-400 text-black px-3 py-1 rounded-lg font-bold">60</div>
+      </div>
+      <div class="text-center text-3xl font-bold" id="predictionText">Waiting...</div>
+    </div>
+
+    <div class="bg-gray-700 p-4 rounded-xl">
+      <h3 class="text-lg font-semibold mb-2 text-yellow-300">History (Last 10)</h3>
+      <ul id="historyList" class="space-y-1 text-sm text-white"></ul>
     </div>
   </div>
+
+  <script>
+    let timer = 60;
+    const predictionEl = document.getElementById("predictionText");
+    const timerEl = document.getElementById("timer");
+    const historyEl = document.getElementById("historyList");
+
+    const getResultFrom91Club = () => {
+      // Simulated actual result from 91 Club (1-6 Small, 7-12 Big)
+      return Math.floor(Math.random() * 12) + 1;
+    };
+
+    const makePrediction = () => {
+      const prediction = Math.random() < 0.5 ? "BIG" : "SMALL";
+      predictionEl.textContent = prediction;
+
+      // Simulate real result from 91 Club
+      const actualResult = getResultFrom91Club();
+      const isWin = (actualResult <= 6 && prediction === "SMALL") || (actualResult > 6 && prediction === "BIG");
+
+      const resultText = isWin ? "✅ WIN" : "❌ LOSS";
+      const resultColor = isWin ? "text-green-400" : "text-red-400";
+
+      const li = document.createElement("li");
+      li.className = resultColor;
+      li.textContent = `${prediction} → ${actualResult} → ${resultText}`;
+
+      historyEl.prepend(li);
+
+      // Keep only last 10
+      while (historyEl.children.length > 10) {
+        historyEl.removeChild(historyEl.lastChild);
+      }
+    };
+
+    // Timer loop
+    setInterval(() => {
+      timer--;
+      timerEl.textContent = timer;
+
+      if (timer <= 0) {
+        makePrediction();
+        timer = 60;
+      }
+    }, 1000);
+  </script>
 </body>
 </html>
